@@ -8,8 +8,24 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
  * is `null` and the data layer falls back to the bundled demo catalog — so the
  * site keeps working at every step instead of breaking.
  */
-const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const rawUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
+
+// Only build a client if the URL is actually a valid http(s) URL. A blank,
+// mistyped, or space-padded value would otherwise throw at build time, so we
+// fall back to the bundled demo catalog instead of crashing.
+function validUrl(u?: string): string | null {
+  if (!u) return null;
+  try {
+    const parsed = new URL(u);
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") return null;
+    return parsed.origin; // strips any trailing path/slash
+  } catch {
+    return null;
+  }
+}
+
+const url = validUrl(rawUrl);
 
 export const supabase: SupabaseClient | null =
   url && key ? createClient(url, key, { auth: { persistSession: false } }) : null;
