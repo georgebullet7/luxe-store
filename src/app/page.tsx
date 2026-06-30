@@ -5,17 +5,22 @@ import { CategoryGrid } from "@/components/category-grid";
 import { Testimonials } from "@/components/testimonials";
 import { PromoBanner } from "@/components/promo-banner";
 import { getFeaturedProducts, getBestSellers, getCategories } from "@/lib/data";
+import { getSiteSettings } from "@/lib/site";
+
+// Always render fresh so admin content edits appear immediately.
+export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [featured, bestSellers, categories] = await Promise.all([
+  const [featured, bestSellers, categories, settings] = await Promise.all([
     getFeaturedProducts(),
     getBestSellers(),
     getCategories(),
+    getSiteSettings(),
   ]);
 
   return (
     <>
-      <Hero />
+      <Hero s={settings} />
 
       <section className="container py-16">
         <SectionHeading title="Shop by category" subtitle="Find what you're looking for" href="/shop" />
@@ -32,7 +37,7 @@ export default async function HomePage() {
       </section>
 
       <section className="container py-4">
-        <PromoBanner />
+        <PromoBanner s={settings} />
       </section>
 
       <section className="container py-16">

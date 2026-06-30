@@ -6,8 +6,9 @@ import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import type { SiteSettings } from "@/lib/site";
 
-export function Hero() {
+export function Hero({ s }: { s: SiteSettings }) {
   return (
     <section className="relative overflow-hidden">
       <div className="container grid items-center gap-10 py-16 md:grid-cols-2 md:py-24">
@@ -18,22 +19,22 @@ export function Hero() {
           className="space-y-6"
         >
           <Badge variant="secondary" className="gap-1.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-accent" /> New season drop
+            <span className="h-1.5 w-1.5 rounded-full bg-accent" /> {s.hero_eyebrow}
           </Badge>
           <h1 className="text-4xl font-bold leading-[1.05] tracking-tight sm:text-5xl lg:text-6xl">
-            Premium gear,<br />
-            <span className="text-muted-foreground">minimally designed.</span>
+            {s.hero_title}
+            <br />
+            <span className="text-muted-foreground">{s.hero_title_accent}</span>
           </h1>
-          <p className="max-w-md text-lg text-muted-foreground">
-            Sound, sport, and everyday essentials engineered to last. Free
-            carbon-neutral shipping, 30-day returns, lifetime support.
-          </p>
+          <p className="max-w-md text-lg text-muted-foreground">{s.hero_subtitle}</p>
           <div className="flex flex-wrap gap-3">
             <Button size="lg" asChild>
-              <Link href="/shop">Shop the collection <ArrowRight className="h-4 w-4" /></Link>
+              <Link href={s.hero_primary_href}>
+                {s.hero_primary_label} <ArrowRight className="h-4 w-4" />
+              </Link>
             </Button>
             <Button size="lg" variant="outline" asChild>
-              <Link href="/shop?category=audio">Explore audio</Link>
+              <Link href={s.hero_secondary_href}>{s.hero_secondary_label}</Link>
             </Button>
           </div>
           <div className="flex gap-8 pt-2 text-sm">
@@ -50,7 +51,7 @@ export function Hero() {
           className="relative aspect-[4/5] overflow-hidden rounded-xl bg-muted shadow-soft-lg md:aspect-square"
         >
           <Image
-            src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=1200&q=80"
+            src={s.hero_image}
             alt="Featured product"
             fill
             priority

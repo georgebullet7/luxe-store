@@ -7,15 +7,13 @@ const columns = [
   { title: "Support", links: [["Contact", "/contact"], ["Shipping", "/shipping"], ["Returns", "/returns"], ["FAQ", "/faq"]] },
 ];
 
-export function Footer() {
+export function Footer({ storeName = "LUXE", tagline = "Premium essentials, designed to last. Free carbon-neutral shipping on every order." }: { storeName?: string; tagline?: string }) {
   return (
     <footer className="border-t bg-secondary/40">
       <div className="container grid gap-10 py-14 md:grid-cols-2 lg:grid-cols-5">
         <div className="lg:col-span-2">
-          <Link href="/" className="text-lg font-bold tracking-tight">LUXE<span className="text-accent">.</span></Link>
-          <p className="mt-3 max-w-xs text-sm text-muted-foreground">
-            Premium essentials, designed to last. Free carbon-neutral shipping on every order.
-          </p>
+          <Link href="/" className="text-lg font-bold tracking-tight">{storeName}<span className="text-accent">.</span></Link>
+          <p className="mt-3 max-w-xs text-sm text-muted-foreground">{tagline}</p>
           <div className="mt-6"><NewsletterForm /></div>
         </div>
         {columns.map((col) => (
@@ -33,7 +31,7 @@ export function Footer() {
       </div>
       <div className="border-t">
         <div className="container flex flex-col items-center justify-between gap-2 py-6 text-sm text-muted-foreground sm:flex-row">
-          <p>© {new Date().getFullYear()} LUXE. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} {storeName}. All rights reserved.</p>
           <div className="flex gap-4">
             <Link href="/privacy" className="hover:text-foreground">Privacy</Link>
             <Link href="/terms" className="hover:text-foreground">Terms</Link>

@@ -17,7 +17,7 @@ const nav = [
   { label: "Footwear", href: "/shop?category=footwear" },
 ];
 
-export function Navbar() {
+export function Navbar({ storeName = "LUXE" }: { storeName?: string }) {
   const pathname = usePathname();
   const [scrolled, setScrolled] = React.useState(false);
   const [open, setOpen] = React.useState(false);
@@ -44,7 +44,7 @@ export function Navbar() {
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
           <Link href="/" className="text-lg font-bold tracking-tight">
-            LUXE<span className="text-accent">.</span>
+            {storeName}<span className="text-accent">.</span>
           </Link>
         </div>
 
