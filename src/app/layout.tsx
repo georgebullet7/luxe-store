@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { getSiteSettings } from "@/lib/site";
+import { WhatsAppBubble } from "@/components/support-links";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
@@ -45,7 +46,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           </a>
           <Navbar storeName={settings.store_name} />
           <main id="main" className="min-h-[60vh]">{children}</main>
-          <Footer storeName={settings.store_name} tagline={settings.footer_tagline} />
+          <Footer
+            storeName={settings.store_name}
+            tagline={settings.footer_tagline}
+            whatsapp={settings.support_whatsapp}
+            telegram={settings.support_telegram}
+          />
+          {settings.support_bubble_enabled && (
+            <WhatsAppBubble whatsapp={settings.support_whatsapp} />
+          )}
           <Toaster richColors position="bottom-right" />
         </ThemeProvider>
       </body>

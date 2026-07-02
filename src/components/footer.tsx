@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { NewsletterForm } from "@/components/newsletter-form";
+import { SupportLinks } from "@/components/support-links";
 
 const columns = [
   { title: "Shop", links: [["All products", "/shop"], ["Audio", "/shop?category=audio"], ["Wearables", "/shop?category=wearables"], ["Footwear", "/shop?category=footwear"]] },
@@ -7,7 +8,10 @@ const columns = [
   { title: "Support", links: [["Contact", "/contact"], ["Shipping", "/shipping"], ["Returns", "/returns"], ["FAQ", "/faq"]] },
 ];
 
-export function Footer({ storeName = "LUXE", tagline = "Premium essentials, designed to last. Free carbon-neutral shipping on every order." }: { storeName?: string; tagline?: string }) {
+export function Footer({ storeName = "LUXE", tagline = "Premium essentials, designed to last. Free carbon-neutral shipping on every order.",
+  whatsapp = "",
+  telegram = "",
+}: { storeName?: string; tagline?: string; whatsapp?: string; telegram?: string }) {
   return (
     <footer className="border-t bg-secondary/40">
       <div className="container grid gap-10 py-14 md:grid-cols-2 lg:grid-cols-5">
@@ -15,6 +19,7 @@ export function Footer({ storeName = "LUXE", tagline = "Premium essentials, desi
           <Link href="/" className="text-lg font-bold tracking-tight">{storeName}<span className="text-accent">.</span></Link>
           <p className="mt-3 max-w-xs text-sm text-muted-foreground">{tagline}</p>
           <div className="mt-6"><NewsletterForm /></div>
+          <SupportLinks whatsapp={whatsapp} telegram={telegram} />
         </div>
         {columns.map((col) => (
           <div key={col.title}>

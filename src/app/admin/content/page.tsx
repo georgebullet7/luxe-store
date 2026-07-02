@@ -189,6 +189,42 @@ export default function AdminContentPage() {
         </CardContent>
       </Card>
 
+      <Card>
+        <CardContent className="space-y-4 p-5">
+          <h2 className="text-lg font-semibold">Customer support</h2>
+          <p className="text-sm text-muted-foreground">
+            Shown as chat buttons in the footer. WhatsApp also appears as a floating
+            bubble on every page.
+          </p>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <Field label="WhatsApp number">
+              <Input
+                inputMode="tel"
+                placeholder="e.g. 70 123 456"
+                value={s.support_whatsapp}
+                onChange={(e) => set("support_whatsapp", e.target.value)}
+              />
+            </Field>
+            <Field label="Telegram username">
+              <Input
+                placeholder="e.g. bulletluxe (without @)"
+                value={s.support_telegram}
+                onChange={(e) => set("support_telegram", e.target.value)}
+              />
+            </Field>
+          </div>
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={s.support_bubble_enabled}
+              onChange={(e) => set("support_bubble_enabled", e.target.checked)}
+              className="h-4 w-4"
+            />
+            Show floating WhatsApp bubble on the site
+          </label>
+        </CardContent>
+      </Card>
+
       <div className="sticky bottom-4 flex justify-end">
         <Button onClick={save} disabled={saving || uploading} size="lg">
           {saving ? "Saving…" : "Save changes"}

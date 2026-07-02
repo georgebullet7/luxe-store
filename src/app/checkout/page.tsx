@@ -11,6 +11,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { formatPrice, cn } from "@/lib/utils";
+import { isValidLebanesePhone, normalizeLebanesePhone } from "@/lib/phone";
 
 type PaySettings = {
   cod_enabled: boolean;
@@ -81,6 +82,8 @@ export default function CheckoutPage() {
     if (items.length === 0) return toast.error("Your cart is empty");
     if (!form.name.trim()) return toast.error("Please enter your name");
     if (!form.phone.trim()) return toast.error("Please enter your phone number");
+    if (!isValidLebanesePhone(form.phone))
+      return toast.error("Please enter a valid Lebanese mobile (e.g. 70 123 456)");
     if (!form.city.trim()) return toast.error("Please enter your city/area");
     if (!form.address.trim()) return toast.error("Please enter your address");
 
@@ -96,7 +99,7 @@ export default function CheckoutPage() {
       }));
       const { data, error } = await sb.rpc("place_order", {
         p_items,
-        p_customer: { ...form },
+        p_customer: { ...form, phone: normalizeLebanesePhone(form.phone) },
         p_payment_method: method,
       });
       if (error) throw error;
@@ -143,7 +146,18 @@ export default function CheckoutPage() {
                     placeholder="e.g. 70 123 456"
                     value={form.phone}
                     onChange={(e) => set("phone", e.target.value)}
+                    className={cn(
+                      form.phone.trim() &&
+                        (isValidLebanesePhone(form.phone)
+                          ? "border-emerald-500 focus-visible:ring-emerald-500"
+                          : "border-destructive focus-visible:ring-destructive")
+                    )}
                   />
+                  {form.phone.trim() && !isValidLebanesePhone(form.phone) && (
+                    <p className="text-xs text-destructive">
+                      Enter a valid Lebanese mobile (03, 70, 71, 76, 78, 79, or 81 + 6 digits)
+                    </p>
+                  )}
                 </Field>
                 <Field label="City / area">
                   <Input value={form.city} onChange={(e) => set("city", e.target.value)} />

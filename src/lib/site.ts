@@ -18,6 +18,9 @@ export type SiteSettings = {
   promo_cta_label: string;
   promo_cta_href: string;
   footer_tagline: string;
+  support_whatsapp: string;
+  support_telegram: string;
+  support_bubble_enabled: boolean;
 };
 
 export const defaultSettings: SiteSettings = {
@@ -42,6 +45,9 @@ export const defaultSettings: SiteSettings = {
   promo_cta_href: "/shop?category=audio",
   footer_tagline:
     "Premium essentials, designed to last. Free carbon-neutral shipping on every order.",
+  support_whatsapp: "",
+  support_telegram: "",
+  support_bubble_enabled: true,
 };
 
 export async function getSiteSettings(): Promise<SiteSettings> {
