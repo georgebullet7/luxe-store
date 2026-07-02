@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   FileText,
+  Wallet,
   Package,
   ShoppingBag,
   Users,
@@ -20,6 +21,7 @@ const links = [
   { href: "/admin/products", label: "Products", icon: Package },
   { href: "/admin/content", label: "Content", icon: FileText },
   { href: "/admin/orders", label: "Orders", icon: ShoppingBag },
+  { href: "/admin/payments", label: "Payments", icon: Wallet },
   { href: "/admin/customers", label: "Customers", icon: Users },
   { href: "/admin/coupons", label: "Coupons", icon: Tag },
   { href: "/admin/inventory", label: "Inventory", icon: Boxes },

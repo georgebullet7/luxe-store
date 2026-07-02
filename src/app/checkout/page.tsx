@@ -1,200 +1,340 @@
 "use client";
 
-import * as React from "react";
-import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Check, CreditCard, MapPin, ClipboardCheck, Lock } from "lucide-react";
+import { Banknote, Wallet, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { addressSchema, type AddressInput } from "@/lib/validations";
 import { useCartStore } from "@/store/cart-store";
-import { formatPrice, cn } from "@/lib/utils";
+import { getBrowserSupabase } from "@/lib/supabase-browser";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
+import { formatPrice, cn } from "@/lib/utils";
 
-const steps = [
-  { id: 1, label: "Shipping", icon: MapPin },
-  { id: 2, label: "Payment", icon: CreditCard },
-  { id: 3, label: "Review", icon: ClipboardCheck },
-];
+type PaySettings = {
+  cod_enabled: boolean;
+  prepaid_enabled: boolean;
+  whish_number: string | null;
+  omt_details: string | null;
+  payment_instructions: string | null;
+  delivery_fee: number;
+  free_delivery_over: number | null;
+};
+
+const FALLBACK: PaySettings = {
+  cod_enabled: true,
+  prepaid_enabled: true,
+  whish_number: null,
+  omt_details: null,
+  payment_instructions: null,
+  delivery_fee: 0,
+  free_delivery_over: null,
+};
 
 export default function CheckoutPage() {
-  const [step, setStep] = React.useState(1);
-  const [submitting, setSubmitting] = React.useState(false);
-  const { items, clear } = useCartStore();
+  const router = useRouter();
+  const items = useCartStore((s) => s.items);
   const subtotal = useCartStore((s) => s.subtotal());
-  const [shipping, setShipping] = React.useState<AddressInput | null>(null);
+  const clear = useCartStore((s) => s.clear);
 
-  const { register, handleSubmit, formState: { errors } } = useForm<AddressInput>({
-    resolver: zodResolver(addressSchema),
-    defaultValues: { country: "Lebanon" },
+  const [cfg, setCfg] = useState<PaySettings>(FALLBACK);
+  const [method, setMethod] = useState<"cod" | "prepaid">("cod");
+  const [placing, setPlacing] = useState(false);
+  const [form, setForm] = useState({
+    name: "",
+    phone: "",
+    city: "",
+    address: "",
+    notes: "",
   });
 
-  const tax = Math.round(subtotal * 0.08);
-  const shippingFee = subtotal > 0 && subtotal < 10000 ? 800 : 0;
-  const total = subtotal + tax + shippingFee;
+  useEffect(() => {
+    (async () => {
+      const sb = getBrowserSupabase();
+      if (!sb) return;
+      const { data } = await sb
+        .from("site_settings")
+        .select(
+          "cod_enabled,prepaid_enabled,whish_number,omt_details,payment_instructions,delivery_fee,free_delivery_over"
+        )
+        .eq("id", "main")
+        .maybeSingle();
+      if (data) {
+        setCfg({ ...FALLBACK, ...data });
+        if (data.cod_enabled === false && data.prepaid_enabled) setMethod("prepaid");
+      }
+    })();
+  }, []);
+
+  const shipping =
+    cfg.free_delivery_over != null && subtotal >= cfg.free_delivery_over
+      ? 0
+      : cfg.delivery_fee || 0;
+  const total = subtotal + shipping;
+
+  function set(k: keyof typeof form, v: string) {
+    setForm((p) => ({ ...p, [k]: v }));
+  }
+
+  async function placeOrder() {
+    if (items.length === 0) return toast.error("Your cart is empty");
+    if (!form.name.trim()) return toast.error("Please enter your name");
+    if (!form.phone.trim()) return toast.error("Please enter your phone number");
+    if (!form.city.trim()) return toast.error("Please enter your city/area");
+    if (!form.address.trim()) return toast.error("Please enter your address");
+
+    const sb = getBrowserSupabase();
+    if (!sb) return toast.error("Store isn't connected");
+
+    setPlacing(true);
+    try {
+      const p_items = items.map((i) => ({
+        product_id: i.productId,
+        variant_id: i.variantId ?? null,
+        quantity: i.quantity,
+      }));
+      const { data, error } = await sb.rpc("place_order", {
+        p_items,
+        p_customer: { ...form },
+        p_payment_method: method,
+      });
+      if (error) throw error;
+      const orderNumber = (data as any)?.order_number ?? "";
+      clear();
+      router.push(
+        `/checkout/success?order=${encodeURIComponent(orderNumber)}&pay=${method}`
+      );
+    } catch (e: any) {
+      toast.error(e.message || "Could not place your order");
+    } finally {
+      setPlacing(false);
+    }
+  }
 
   if (items.length === 0) {
     return (
-      <div className="container py-28 text-center">
+      <div className="container py-20 text-center">
         <h1 className="text-2xl font-bold">Your cart is empty</h1>
-        <Button className="mt-6" asChild><Link href="/shop">Shop now</Link></Button>
+        <p className="mt-2 text-muted-foreground">Add something to check out.</p>
+        <Button className="mt-6" onClick={() => router.push("/shop")}>
+          Browse products
+        </Button>
       </div>
     );
   }
 
-  function onShippingSubmit(data: AddressInput) {
-    setShipping(data);
-    setStep(2);
-  }
-
-  async function placeOrder() {
-    setSubmitting(true);
-    try {
-      // In production: POST /api/checkout -> create Stripe Checkout Session,
-      // then redirect to the returned session.url. Demo simulates success:
-      const res = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items, shipping }),
-      }).catch(() => null);
-
-      await new Promise((r) => setTimeout(r, 900));
-      if (res && res.ok) {
-        const data = await res.json().catch(() => null);
-        if (data?.url) { window.location.href = data.url; return; }
-      }
-      clear();
-      toast.success("Order placed! Confirmation sent to your email.");
-      window.location.href = "/checkout/success";
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
   return (
     <div className="container py-10">
-      <h1 className="text-2xl font-bold tracking-tight">Checkout</h1>
-
-      {/* Stepper */}
-      <ol className="mt-6 flex items-center gap-4">
-        {steps.map((s, i) => (
-          <React.Fragment key={s.id}>
-            <li className="flex items-center gap-2">
-              <span className={cn("grid h-9 w-9 place-items-center rounded-full border text-sm font-medium", step >= s.id ? "border-primary bg-primary text-primary-foreground" : "text-muted-foreground")}>
-                {step > s.id ? <Check className="h-4 w-4" /> : s.id}
-              </span>
-              <span className={cn("text-sm font-medium", step >= s.id ? "" : "text-muted-foreground")}>{s.label}</span>
-            </li>
-            {i < steps.length - 1 && <span className="h-px flex-1 bg-border" />}
-          </React.Fragment>
-        ))}
-      </ol>
-
-      <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_360px]">
-        <div>
-          {step === 1 && (
-            <form onSubmit={handleSubmit(onShippingSubmit)} className="space-y-4">
-              <h2 className="font-semibold">Shipping address</h2>
-              <Field label="Full name" error={errors.fullName?.message}><Input {...register("fullName")} /></Field>
-              <Field label="Phone" error={errors.phone?.message}><Input {...register("phone")} /></Field>
-              <Field label="Address line 1" error={errors.line1?.message}><Input {...register("line1")} /></Field>
-              <Field label="Address line 2 (optional)"><Input {...register("line2")} /></Field>
+      <h1 className="mb-8 text-2xl font-bold tracking-tight">Checkout</h1>
+      <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
+        {/* Left: details + payment */}
+        <div className="space-y-6">
+          <Card>
+            <CardContent className="space-y-4 p-5">
+              <h2 className="text-lg font-semibold">Delivery details</h2>
               <div className="grid gap-4 sm:grid-cols-2">
-                <Field label="City" error={errors.city?.message}><Input {...register("city")} /></Field>
-                <Field label="Postal code" error={errors.postalCode?.message}><Input {...register("postalCode")} /></Field>
+                <Field label="Full name">
+                  <Input value={form.name} onChange={(e) => set("name", e.target.value)} />
+                </Field>
+                <Field label="Phone number">
+                  <Input
+                    inputMode="tel"
+                    placeholder="e.g. 70 123 456"
+                    value={form.phone}
+                    onChange={(e) => set("phone", e.target.value)}
+                  />
+                </Field>
+                <Field label="City / area">
+                  <Input value={form.city} onChange={(e) => set("city", e.target.value)} />
+                </Field>
+                <Field label="Address (building, street, floor)">
+                  <Input value={form.address} onChange={(e) => set("address", e.target.value)} />
+                </Field>
               </div>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <Field label="State / Region"><Input {...register("state")} /></Field>
-                <Field label="Country" error={errors.country?.message}><Input {...register("country")} /></Field>
-              </div>
-              <Button type="submit" size="lg" className="w-full">Continue to payment</Button>
-            </form>
-          )}
+              <Field label="Notes for delivery (optional)">
+                <textarea
+                  rows={2}
+                  value={form.notes}
+                  onChange={(e) => set("notes", e.target.value)}
+                  className="flex w-full rounded-lg border border-input bg-background px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                />
+              </Field>
+            </CardContent>
+          </Card>
 
-          {step === 2 && (
-            <div className="space-y-4">
-              <h2 className="font-semibold">Payment</h2>
-              <Card>
-                <CardContent className="space-y-4 p-6">
-                  <div className="flex items-center gap-2 rounded-lg border bg-secondary/40 p-3 text-sm">
-                    <Lock className="h-4 w-4 text-muted-foreground" />
-                    Payments are processed securely by Stripe. Card details never touch our servers.
-                  </div>
-                  <Field label="Card number"><Input placeholder="4242 4242 4242 4242" /></Field>
-                  <div className="grid grid-cols-2 gap-4">
-                    <Field label="Expiry"><Input placeholder="MM / YY" /></Field>
-                    <Field label="CVC"><Input placeholder="123" /></Field>
-                  </div>
-                  <p className="text-xs text-muted-foreground">Demo only — wire to Stripe Elements / Checkout in production.</p>
-                </CardContent>
-              </Card>
-              <div className="flex gap-3">
-                <Button variant="outline" className="flex-1" onClick={() => setStep(1)}>Back</Button>
-                <Button className="flex-1" onClick={() => setStep(3)}>Review order</Button>
-              </div>
-            </div>
-          )}
+          <Card>
+            <CardContent className="space-y-3 p-5">
+              <h2 className="text-lg font-semibold">Payment method</h2>
 
-          {step === 3 && (
-            <div className="space-y-4">
-              <h2 className="font-semibold">Review &amp; confirm</h2>
-              {shipping && (
-                <Card><CardContent className="p-6 text-sm">
-                  <p className="font-medium">{shipping.fullName}</p>
-                  <p className="text-muted-foreground">{shipping.line1}{shipping.line2 ? `, ${shipping.line2}` : ""}</p>
-                  <p className="text-muted-foreground">{shipping.city}, {shipping.postalCode}, {shipping.country}</p>
-                  <p className="text-muted-foreground">{shipping.phone}</p>
-                </CardContent></Card>
+              {cfg.cod_enabled && (
+                <PayOption
+                  active={method === "cod"}
+                  onClick={() => setMethod("cod")}
+                  icon={<Banknote className="h-5 w-5" />}
+                  title="Cash on delivery"
+                  subtitle="Pay in cash when your order arrives."
+                />
               )}
-              <div className="flex gap-3">
-                <Button variant="outline" className="flex-1" onClick={() => setStep(2)}>Back</Button>
-                <Button variant="accent" className="flex-1" onClick={placeOrder} disabled={submitting}>
-                  {submitting ? "Processing..." : `Pay ${formatPrice(total)}`}
-                </Button>
-              </div>
-            </div>
-          )}
+
+              {cfg.prepaid_enabled && (
+                <PayOption
+                  active={method === "prepaid"}
+                  onClick={() => setMethod("prepaid")}
+                  icon={<Wallet className="h-5 w-5" />}
+                  title="Pay now by Whish / OMT"
+                  subtitle="Send payment now; we deliver once confirmed."
+                />
+              )}
+
+              {method === "prepaid" && (
+                <div className="rounded-lg border bg-muted/40 p-4 text-sm">
+                  <p className="font-medium">How to pay</p>
+                  <ul className="mt-2 space-y-1 text-muted-foreground">
+                    {cfg.whish_number && (
+                      <li>
+                        Whish to: <span className="font-medium text-foreground">{cfg.whish_number}</span>
+                      </li>
+                    )}
+                    {cfg.omt_details && (
+                      <li>
+                        OMT: <span className="font-medium text-foreground">{cfg.omt_details}</span>
+                      </li>
+                    )}
+                    <li>
+                      Amount: <span className="font-medium text-foreground">{formatPrice(total)}</span>
+                    </li>
+                  </ul>
+                  {cfg.payment_instructions && (
+                    <p className="mt-2 text-muted-foreground">{cfg.payment_instructions}</p>
+                  )}
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    Place your order below, then send the payment. We&apos;ll confirm and deliver.
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
 
-        <Card className="h-fit lg:sticky lg:top-20">
-          <CardContent className="space-y-4 p-6">
-            <h2 className="font-semibold">Your order</h2>
-            <ul className="space-y-3">
-              {items.map((item) => (
-                <li key={`${item.productId}-${item.variantId}`} className="flex gap-3">
-                  <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg bg-muted">
-                    <Image src={item.image} alt={item.name} fill sizes="56px" className="object-cover" />
-                  </div>
-                  <div className="flex-1 text-sm">
-                    <p className="line-clamp-1 font-medium">{item.name}</p>
-                    <p className="text-muted-foreground">Qty {item.quantity}</p>
-                  </div>
-                  <p className="text-sm font-medium">{formatPrice(item.unitPrice * item.quantity)}</p>
-                </li>
-              ))}
-            </ul>
-            <dl className="space-y-2 border-t pt-4 text-sm">
-              <div className="flex justify-between"><dt className="text-muted-foreground">Subtotal</dt><dd>{formatPrice(subtotal)}</dd></div>
-              <div className="flex justify-between"><dt className="text-muted-foreground">Shipping</dt><dd>{shippingFee === 0 ? "Free" : formatPrice(shippingFee)}</dd></div>
-              <div className="flex justify-between"><dt className="text-muted-foreground">Tax</dt><dd>{formatPrice(tax)}</dd></div>
-            </dl>
-            <div className="flex justify-between border-t pt-4 font-semibold"><span>Total</span><span>{formatPrice(total)}</span></div>
-          </CardContent>
-        </Card>
+        {/* Right: summary */}
+        <div>
+          <Card className="lg:sticky lg:top-24">
+            <CardContent className="p-5">
+              <h2 className="mb-4 text-lg font-semibold">Your order</h2>
+              <ul className="space-y-3">
+                {items.map((i) => (
+                  <li key={`${i.productId}-${i.variantId ?? ""}`} className="flex gap-3">
+                    <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-md bg-muted">
+                      {i.image && (
+                        <Image src={i.image} alt={i.name} fill sizes="56px" className="object-cover" />
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium">{i.name}</p>
+                      {i.variantName && (
+                        <p className="text-xs text-muted-foreground">{i.variantName}</p>
+                      )}
+                      <p className="text-xs text-muted-foreground">Qty {i.quantity}</p>
+                    </div>
+                    <p className="text-sm font-medium">{formatPrice(i.unitPrice * i.quantity)}</p>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="mt-4 space-y-1.5 border-t pt-4 text-sm">
+                <Row label="Subtotal" value={formatPrice(subtotal)} />
+                <Row
+                  label="Delivery"
+                  value={shipping === 0 ? "Free" : formatPrice(shipping)}
+                />
+                <div className="flex justify-between border-t pt-2 text-base font-semibold">
+                  <span>Total</span>
+                  <span>{formatPrice(total)}</span>
+                </div>
+              </div>
+
+              <Button className="mt-5 w-full" size="lg" onClick={placeOrder} disabled={placing}>
+                {placing ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" /> Placing order…
+                  </>
+                ) : (
+                  "Place order"
+                )}
+              </Button>
+              <p className="mt-2 text-center text-xs text-muted-foreground">
+                {method === "cod"
+                  ? "You'll pay cash when it arrives."
+                  : "You'll send payment after placing the order."}
+              </p>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
 }
 
-function Field({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) {
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <label className="block">
-      <span className="mb-1.5 block text-sm font-medium">{label}</span>
+    <div className="space-y-1.5">
+      <label className="text-sm font-medium">{label}</label>
       {children}
-      {error && <span className="mt-1 block text-xs text-destructive">{error}</span>}
-    </label>
+    </div>
+  );
+}
+
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between text-muted-foreground">
+      <span>{label}</span>
+      <span className="text-foreground">{value}</span>
+    </div>
+  );
+}
+
+function PayOption({
+  active,
+  onClick,
+  icon,
+  title,
+  subtitle,
+}: {
+  active: boolean;
+  onClick: () => void;
+  icon: React.ReactNode;
+  title: string;
+  subtitle: string;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "flex w-full items-center gap-3 rounded-lg border p-3 text-left transition-colors",
+        active ? "border-primary bg-primary/5" : "hover:bg-muted/50"
+      )}
+    >
+      <div
+        className={cn(
+          "grid h-10 w-10 place-items-center rounded-md",
+          active ? "bg-primary text-primary-foreground" : "bg-muted"
+        )}
+      >
+        {icon}
+      </div>
+      <div className="flex-1">
+        <p className="text-sm font-medium">{title}</p>
+        <p className="text-xs text-muted-foreground">{subtitle}</p>
+      </div>
+      <span
+        className={cn(
+          "grid h-5 w-5 place-items-center rounded-full border",
+          active ? "border-primary" : "border-muted-foreground/40"
+        )}
+      >
+        {active && <span className="h-2.5 w-2.5 rounded-full bg-primary" />}
+      </span>
+    </button>
   );
 }
