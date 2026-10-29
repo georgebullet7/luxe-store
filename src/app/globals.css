@@ -8,63 +8,63 @@
  */
 @layer base {
   :root {
-    --background: 2 82% 13%;        /* deep burgundy sampled from the logo (#3E0806) */
-    --foreground: 15 48% 92%;       /* cream lettering color */
+    --background: 0 97% 12%;        /* deep burgundy sampled from the BRANDS BY MIRA logo (#3B0101) */
+    --foreground: 15 48% 93%;       /* cream lettering color */
 
-    --card: 4 60% 17%;
-    --card-foreground: 15 48% 92%;
-    --popover: 4 60% 16%;
-    --popover-foreground: 15 48% 92%;
+    --card: 0 70% 16%;
+    --card-foreground: 15 48% 93%;
+    --popover: 0 70% 15%;
+    --popover-foreground: 15 48% 93%;
 
     --primary: 20 45% 95%;          /* white/cream buttons */
-    --primary-foreground: 2 82% 12%;
+    --primary-foreground: 0 97% 11%;
 
-    --secondary: 4 50% 21%;
-    --secondary-foreground: 15 48% 92%;
+    --secondary: 0 60% 20%;
+    --secondary-foreground: 15 48% 93%;
 
-    --muted: 4 45% 20%;
-    --muted-foreground: 12 30% 74%;
+    --muted: 0 55% 19%;
+    --muted-foreground: 10 30% 75%;
 
-    --accent: 6 65% 74%;            /* light rosy burgundy for CTAs / sale tags */
-    --accent-foreground: 2 82% 13%;
+    --accent: 4 65% 74%;            /* light rosy burgundy for CTAs / sale tags */
+    --accent-foreground: 0 97% 12%;
 
     --destructive: 0 85% 62%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 4 40% 26%;
-    --input: 4 40% 26%;
-    --ring: 15 48% 87%;
+    --border: 0 50% 25%;
+    --input: 0 50% 25%;
+    --ring: 15 48% 88%;
 
     --radius: 0.875rem;
   }
 
   .dark {
-    --background: 2 78% 9%;
-    --foreground: 15 48% 92%;
+    --background: 0 90% 8%;
+    --foreground: 15 48% 93%;
 
-    --card: 4 60% 13%;
-    --card-foreground: 15 48% 92%;
-    --popover: 4 60% 12%;
-    --popover-foreground: 15 48% 92%;
+    --card: 0 70% 12%;
+    --card-foreground: 15 48% 93%;
+    --popover: 0 70% 11%;
+    --popover-foreground: 15 48% 93%;
 
     --primary: 20 45% 95%;
-    --primary-foreground: 2 82% 12%;
+    --primary-foreground: 0 97% 11%;
 
-    --secondary: 4 50% 17%;
-    --secondary-foreground: 15 48% 92%;
+    --secondary: 0 60% 16%;
+    --secondary-foreground: 15 48% 93%;
 
-    --muted: 4 45% 16%;
-    --muted-foreground: 12 28% 70%;
+    --muted: 0 55% 15%;
+    --muted-foreground: 10 28% 71%;
 
-    --accent: 6 65% 72%;
-    --accent-foreground: 2 82% 13%;
+    --accent: 4 65% 72%;
+    --accent-foreground: 0 97% 12%;
 
     --destructive: 0 75% 50%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 4 40% 21%;
-    --input: 4 40% 21%;
-    --ring: 15 48% 87%;
+    --border: 0 50% 20%;
+    --input: 0 50% 20%;
+    --ring: 15 48% 88%;
   }
 }
 

@@ -18,7 +18,7 @@ export function Footer({ storeName = "BRANDS BY MIRA", tagline = "Premium essent
       <div className="container grid gap-10 py-14 md:grid-cols-2 lg:grid-cols-5">
         <div className="lg:col-span-2">
           <Link href="/" className="inline-block" aria-label={storeName}>
-            <Image src="/logo.png" alt={storeName} width={64} height={64} className="h-16 w-16 rounded-xl object-cover" />
+            <Image src="/logo.png" alt={storeName} width={420} height={168} className="h-24 w-auto" />
           </Link>
           <p className="mt-3 max-w-xs text-sm text-muted-foreground">{tagline}</p>
           <div className="mt-6"><NewsletterForm /></div>

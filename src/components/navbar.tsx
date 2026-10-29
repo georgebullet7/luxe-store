@@ -48,10 +48,10 @@ export function Navbar({ storeName = "BRANDS BY MIRA" }: { storeName?: string })
             <Image
               src="/logo.png"
               alt={storeName}
-              width={44}
-              height={44}
+              width={300}
+              height={120}
               priority
-              className="h-11 w-11 rounded-lg object-cover"
+              className="h-12 w-auto"
             />
           </Link>
         </div>
