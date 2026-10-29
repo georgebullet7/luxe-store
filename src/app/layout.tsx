@@ -15,21 +15,21 @@ const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 export const metadata: Metadata = {
   metadataBase: new URL(appUrl),
   title: {
-    default: "LUXE — Premium Essentials",
-    template: "%s · LUXE",
+    default: "BRANDS BY MIRA",
+    template: "%s · BRANDS BY MIRA",
   },
   description:
     "Premium audio, wearables, and everyday essentials. Free carbon-neutral shipping, 30-day returns.",
   keywords: ["ecommerce", "premium", "headphones", "smartwatch", "minimal"],
   openGraph: {
     type: "website",
-    title: "LUXE — Premium Essentials",
+    title: "BRANDS BY MIRA",
     description: "Premium gear, minimally designed.",
     url: appUrl,
-    siteName: "LUXE",
+    siteName: "BRANDS BY MIRA",
     images: [{ url: "/og.jpg", width: 1200, height: 630 }],
   },
-  twitter: { card: "summary_large_image", title: "LUXE", description: "Premium gear, minimally designed." },
+  twitter: { card: "summary_large_image", title: "BRANDS BY MIRA", description: "Premium gear, minimally designed." },
   robots: { index: true, follow: true },
 };
 

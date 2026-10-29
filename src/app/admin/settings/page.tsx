@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 
 export default function AdminSettingsPage() {
   const [store, setStore] = useState({
-    name: "LUXE",
+    name: "BRANDS BY MIRA",
     supportEmail: "support@luxe.example",
     currency: "USD",
     freeShipThreshold: "100",

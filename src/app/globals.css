@@ -4,67 +4,67 @@
 
 /*
  * Customizable theme — change these HSL triplets to re-skin the whole store.
- * Primary is a deep near-black (Apple/Nike-style) for a premium minimal feel.
+ * BRANDS BY MIRA — deep burgundy + cream, sampled from the brand logo.
  */
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 9%;
+    --background: 2 82% 13%;        /* deep burgundy sampled from the logo (#3E0806) */
+    --foreground: 15 48% 92%;       /* cream lettering color */
 
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 9%;
+    --card: 4 60% 17%;
+    --card-foreground: 15 48% 92%;
+    --popover: 4 60% 16%;
+    --popover-foreground: 15 48% 92%;
 
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
+    --primary: 20 45% 95%;          /* white/cream buttons */
+    --primary-foreground: 2 82% 12%;
 
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 9%;
+    --secondary: 4 50% 21%;
+    --secondary-foreground: 15 48% 92%;
 
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 45%;
+    --muted: 4 45% 20%;
+    --muted-foreground: 12 30% 74%;
 
-    --accent: 24 95% 53%; /* warm coral accent for CTAs / sale tags */
-    --accent-foreground: 0 0% 100%;
+    --accent: 6 65% 74%;            /* light rosy burgundy for CTAs / sale tags */
+    --accent-foreground: 2 82% 13%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 85% 62%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
-    --ring: 0 0% 9%;
+    --border: 4 40% 26%;
+    --input: 4 40% 26%;
+    --ring: 15 48% 87%;
 
     --radius: 0.875rem;
   }
 
   .dark {
-    --background: 0 0% 7%;
-    --foreground: 0 0% 98%;
+    --background: 2 78% 9%;
+    --foreground: 15 48% 92%;
 
-    --card: 0 0% 10%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 10%;
-    --popover-foreground: 0 0% 98%;
+    --card: 4 60% 13%;
+    --card-foreground: 15 48% 92%;
+    --popover: 4 60% 12%;
+    --popover-foreground: 15 48% 92%;
 
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
+    --primary: 20 45% 95%;
+    --primary-foreground: 2 82% 12%;
 
-    --secondary: 0 0% 15%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 4 50% 17%;
+    --secondary-foreground: 15 48% 92%;
 
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 64%;
+    --muted: 4 45% 16%;
+    --muted-foreground: 12 28% 70%;
 
-    --accent: 24 95% 55%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 6 65% 72%;
+    --accent-foreground: 2 82% 13%;
 
-    --destructive: 0 70% 45%;
+    --destructive: 0 75% 50%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 18%;
-    --input: 0 0% 18%;
-    --ring: 0 0% 83%;
+    --border: 4 40% 21%;
+    --input: 4 40% 21%;
+    --ring: 15 48% 87%;
   }
 }
 

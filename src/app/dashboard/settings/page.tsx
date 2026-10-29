@@ -54,7 +54,7 @@ export default function SettingsPage() {
             <div>
               <p className="text-sm font-medium">Theme</p>
               <p className="text-xs text-muted-foreground">
-                Choose how LUXE looks to you.
+                Choose how BRANDS BY MIRA looks to you.
               </p>
             </div>
             <div className="flex gap-1 rounded-lg border p-1">

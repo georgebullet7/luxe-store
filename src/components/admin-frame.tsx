@@ -100,7 +100,7 @@ export function AdminFrame({ children }: { children: ReactNode }) {
 
       <header className="mb-8 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <p className="text-sm text-muted-foreground">LUXE</p>
+          <p className="text-sm text-muted-foreground">BRANDS BY MIRA</p>
           <h1 className="text-2xl font-bold tracking-tight">Admin dashboard</h1>
         </div>
         <div className="flex items-center gap-2">

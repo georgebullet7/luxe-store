@@ -24,7 +24,7 @@ export type SiteSettings = {
 };
 
 export const defaultSettings: SiteSettings = {
-  store_name: "LUXE",
+  store_name: "BRANDS BY MIRA",
   hero_eyebrow: "New season drop",
   hero_title: "Premium gear,",
   hero_title_accent: "minimally designed.",

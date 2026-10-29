@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Heart, Menu, Search, ShoppingBag, User, X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -17,7 +18,7 @@ const nav = [
   { label: "Footwear", href: "/shop?category=footwear" },
 ];
 
-export function Navbar({ storeName = "LUXE" }: { storeName?: string }) {
+export function Navbar({ storeName = "BRANDS BY MIRA" }: { storeName?: string }) {
   const pathname = usePathname();
   const [scrolled, setScrolled] = React.useState(false);
   const [open, setOpen] = React.useState(false);
@@ -43,8 +44,15 @@ export function Navbar({ storeName = "LUXE" }: { storeName?: string }) {
           <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setOpen((v) => !v)} aria-label="Menu">
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
-          <Link href="/" className="text-lg font-bold tracking-tight">
-            {storeName}<span className="text-accent">.</span>
+          <Link href="/" className="flex items-center gap-2" aria-label={storeName}>
+            <Image
+              src="/logo.png"
+              alt={storeName}
+              width={44}
+              height={44}
+              priority
+              className="h-11 w-11 rounded-lg object-cover"
+            />
           </Link>
         </div>
 

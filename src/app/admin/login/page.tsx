@@ -56,7 +56,7 @@ export default function AdminLoginPage() {
           </div>
           <h1 className="text-xl font-bold tracking-tight">Admin sign in</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            LUXE store management
+            BRANDS BY MIRA — store management
           </p>
         </div>
 

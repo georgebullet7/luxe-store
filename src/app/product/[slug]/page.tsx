@@ -41,7 +41,7 @@ export default async function ProductPage({ params }: Props) {
     name: product.name,
     image: product.images,
     description: product.description,
-    brand: { "@type": "Brand", name: product.brandName ?? "LUXE" },
+    brand: { "@type": "Brand", name: product.brandName ?? "BRANDS BY MIRA" },
     aggregateRating: {
       "@type": "AggregateRating",
       ratingValue: product.rating,

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { NewsletterForm } from "@/components/newsletter-form";
 import { SupportLinks } from "@/components/support-links";
 
@@ -8,7 +9,7 @@ const columns = [
   { title: "Support", links: [["Contact", "/contact"], ["Shipping", "/shipping"], ["Returns", "/returns"], ["FAQ", "/faq"]] },
 ];
 
-export function Footer({ storeName = "LUXE", tagline = "Premium essentials, designed to last. Free carbon-neutral shipping on every order.",
+export function Footer({ storeName = "BRANDS BY MIRA", tagline = "Premium essentials, designed to last. Free carbon-neutral shipping on every order.",
   whatsapp = "",
   telegram = "",
 }: { storeName?: string; tagline?: string; whatsapp?: string; telegram?: string }) {
@@ -16,7 +17,9 @@ export function Footer({ storeName = "LUXE", tagline = "Premium essentials, desi
     <footer className="border-t bg-secondary/40">
       <div className="container grid gap-10 py-14 md:grid-cols-2 lg:grid-cols-5">
         <div className="lg:col-span-2">
-          <Link href="/" className="text-lg font-bold tracking-tight">{storeName}<span className="text-accent">.</span></Link>
+          <Link href="/" className="inline-block" aria-label={storeName}>
+            <Image src="/logo.png" alt={storeName} width={64} height={64} className="h-16 w-16 rounded-xl object-cover" />
+          </Link>
           <p className="mt-3 max-w-xs text-sm text-muted-foreground">{tagline}</p>
           <div className="mt-6"><NewsletterForm /></div>
           <SupportLinks whatsapp={whatsapp} telegram={telegram} />
