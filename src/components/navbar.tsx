@@ -39,7 +39,7 @@ export function Navbar({ storeName = "BRANDS BY MIRA" }: { storeName?: string })
         scrolled ? "border-b bg-background/80 backdrop-blur-xl" : "bg-background"
       )}
     >
-      <div className="container flex h-16 items-center justify-between gap-4">
+      <div className="container flex h-20 items-center justify-between gap-4">
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setOpen((v) => !v)} aria-label="Menu">
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -51,7 +51,7 @@ export function Navbar({ storeName = "BRANDS BY MIRA" }: { storeName?: string })
               width={300}
               height={120}
               priority
-              className="h-12 w-auto"
+              className="h-10 w-auto sm:h-14"
             />
           </Link>
         </div>
